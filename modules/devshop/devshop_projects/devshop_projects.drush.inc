@@ -297,11 +297,12 @@ function devshop_projects_post_hosting_delete_task($task, $data) {
       ->condition('platform', $task->ref->platform)
       ->execute();
 
-    // If drupal root is not repo root, delete folder at code_path.
-    $repo_path = str_replace($task->ref->project->drupal_path, '', $task->ref->publish_path);
-    if (file_exists($repo_path) ) {
-      _provision_recursive_delete($repo_path);
-    }
+    // No longer needed. Hosting_git platform delete task handles it.
+//     If drupal root is not repo root, delete folder at code_path.
+//    $repo_path = str_replace($task->ref->project->drupal_path, '', $task->ref->publish_path);
+//    if (file_exists($repo_path) ) {
+//      _provision_recursive_delete($repo_path);
+//    }
   }
 
   // When a platform is deleted, if it is the last in the project,
