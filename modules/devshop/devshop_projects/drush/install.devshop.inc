@@ -22,6 +22,9 @@ function drush_provision_devshop_install_pre_validate() {
   elseif (preg_match("/Host '([^']*)' is not allowed to connect to/", implode('', drush_shell_exec_output()), $match)) {
     return;
   }
+  elseif (preg_match("/ERROR 1449 \(HY000\): The user specified as a definer \('intntnllyInvalid'@'([^']*)'\) does not exist/", implode('', drush_shell_exec_output()), $match)) {
+    return;
+  }
   else {
     return drush_set_error('PROVISION_DB_CONNECT_FAIL', dt('Dummy connection failed to fail. Either your MySQL permissions are too lax, or the response was not understood. See http://is.gd/Y6i4FO for more information. %msg', array('%msg' => join("\n", drush_shell_exec_output()))));
   }
