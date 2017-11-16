@@ -304,10 +304,10 @@ function hosting_site_insert(&$node) {
     }
 
     // If db_server hasn't been explicity set, use hostmaster's web server.
-//     if (!isset($node->platform_node->db_server)) {
-//       $hostmaster = hosting_context_load('hostmaster');
-//       $node->db_server = $hostmaster->db_server;
-//     }
+    if (!isset($node->db_server)) {
+      $hostmaster = hosting_context_load('hostmaster');
+      $node->db_server = $hostmaster->db_server;
+    }
   }
 
   // If there is no platform NID and no publish path, throw an exception.
