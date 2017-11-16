@@ -624,7 +624,7 @@ function devshop_projects_hosting_drush_aliases_name($node) {
  * Helper function to create a site in a project.
  * Used by Wizard & "Create Platform" > Post Verify
  */
-function devshop_projects_create_site($project, $platform_node, $environment_name, $db_server = NULL) {
+function devshop_projects_create_site($project, $platform_node, $environment_name, $db_server = NULL, $web_server = NULL) {
   global $user;
 
   // Create the site nodes
@@ -632,7 +632,7 @@ function devshop_projects_create_site($project, $platform_node, $environment_nam
   $node->type = 'site';
   $node->status = 1;
   $node->uid = $user->uid;
-  $node->title = devshop_environment_url($project, $environment_name);
+  $node->title = devshop_environment_url($project, $environment_name,['db_server' => $db_server, 'web_server' => $web_server]);
 
   // Aegir properties
   // @TODO: better client & DB support
@@ -780,7 +780,9 @@ function devshop_load_project_by_name($name) {
  * @param $environment_name
  * @return string
  */
-function devshop_environment_url($project, $environment_name) {
+function devshop_environment_url($project, $environment_name, $settings = []) {
+  
+  $settings = (array)$settings;
 
   // Generate field prefix and suffix using domain name pattern.
   if (variable_get('devshop_projects_allow_custom_base_url')) {
@@ -789,10 +791,16 @@ function devshop_environment_url($project, $environment_name) {
   else {
     $pattern = variable_get('devshop_project_environment_url_pattern', '@project.@environment.@hostname');
   }
+  $web_server  = $_SERVER['SERVER_NAME'];
+  if(!empty($settings['web_server'])){
+    if($server = node_load($settings['web_server'])){
+      $web_server = $server->title;
+    }
+  }
   $domain = strtr($pattern, array(
     '@environment' => $environment_name,
     '@project' => $project->name,
-    '@hostname' => $_SERVER['SERVER_NAME'],
+    '@hostname' => $web_server,
   ));
   return $domain;
 }

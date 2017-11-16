@@ -24,7 +24,7 @@ function hosting_create_environment($project, $new_environment_name, $new_enviro
   // Create site node.
   $site = new stdClass();
   $site->type = 'site';
-  $site->title = devshop_environment_url($project, $new_environment_name);
+  $site->title = devshop_environment_url($project, $new_environment_name, $settings);
   $site->status = 1;
   $site->uid = $user->uid;
   $site->name = $user->name;

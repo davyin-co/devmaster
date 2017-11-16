@@ -1247,7 +1247,7 @@ function devshop_projects_create_environment_form_validate_name($element, &$form
     }
 
     // Generate field prefix and suffix using domain name pattern.
-    form_set_value($form['title'], devshop_environment_url($project, $element['#value']), $form_state);
+    form_set_value($form['title'], devshop_environment_url($project, $element['#value'],$form_state['values']), $form_state);
 
     // Attach a new platform node.
     $platform_node = devshop_prepare_platform_node($project, $element['#value'], $form_state['values']['git_ref'], $form_state['values']['web_server']);
