@@ -1,0 +1,6 @@
+name = "Provision Git"
+description = "Provides wrappers for provision.module to access Git commands."
+; Information added by drush on 2017-07-27
+version = "unknown"
+project = "hosting_git"
+datestamp = "1501178018"

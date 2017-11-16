@@ -1,0 +1,11 @@
+name = site_data
+description = Example implementation of saving data into a site context.
+package = Hosting Examples
+dependencies[] = hosting_site
+
+core = 7.x
+
+; Information added by drush on 2017-07-26
+version = "7.x-3.x-devshop-dev"
+project = "hosting"
+datestamp = "1501090553"

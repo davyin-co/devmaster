@@ -1,0 +1,13 @@
+name = Aegir Config Management
+description = Tools for managing Drupal 8 config with Aegir.
+package = Aegir
+dependencies[] = hosting_site
+core = 7.x
+
+
+; Information added by Drupal.org packaging script on 2017-07-19
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "aegir_config"
+datestamp = "1500497945"
+

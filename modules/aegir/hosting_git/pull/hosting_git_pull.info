@@ -1,0 +1,11 @@
+name = Git pull tasks
+description = Allows access to the pull task
+package = Aegir Git
+dependencies[] = hosting_site
+dependencies[] = hosting_git
+core = 7.x
+
+; Information added by drush on 2017-07-27
+version = "unknown"
+project = "hosting_git"
+datestamp = "1501178018"

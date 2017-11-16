@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file hosting_certificate.module
+ * Contains hooks for the certificate module.
+ */
+
+/**
+ * Implements hook_hosting_service_type().
+ */
+function hosting_certificate_hosting_service_type() {
+  return array(
+    'Certificate' => array(
+      'title' => t('Certificate'),
+    ),
+  );
+}
+
+/*
+ * Don't allow a module to be disabled so long as any servers have its
+ * service enabled.
+ */
+function hosting_certificate_prevent_orphaned_services(&$info, $service, $type) {
+  $servers = hosting_get_servers($service, FALSE);
+  $to_disable = array();
+  foreach ($servers as $nid => $name) {
+    $server = node_load($nid);
+    if ($server->services[$service]->type == $type) {
+      $to_disable[] = l($name, 'node/' . $nid);
+    }
+  }
+  if (count($to_disable)) {
+    $info['required'] = TRUE;
+    $info['description'] .= t(" This feature cannot be disabled, since a service it provides is currently in use.");
+    $info['description'] .= t(" Disable the :type service on the following servers: ", array(':type' => $type));
+    $info['description'] .= implode(',', $to_disable) . ".";
+  }
+}

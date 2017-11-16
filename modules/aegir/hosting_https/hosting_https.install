@@ -1,0 +1,75 @@
+<?php
+/**
+ * @file
+ * Define the database schema and uninstall function for the hosting_https module.
+ *
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function hosting_https_schema() {
+  $schema['hosting_https_server'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'https_port' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('vid', 'nid'),
+  );
+
+  $schema['hosting_https_site'] = array(
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'https_enabled' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('vid', 'nid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Remove HTTPS service records from hosting_service table.
+ */
+function hosting_https_uninstall() {
+  db_delete('hosting_service')
+    ->condition('service', 'http')
+    ->condition('type', 'https_apache')
+    ->execute();
+  db_delete('hosting_service')
+    ->condition('service', 'http')
+    ->condition('type', 'https_nginx')
+    ->execute();
+}

@@ -1,0 +1,13 @@
+name = Aegir Cloud
+description = Connects to cloud hosting providers to provision servers for use with Aegir.
+core = 7.x
+package = Aegir Cloud
+
+dependencies[] = hosting_server
+
+; Information added by Drupal.org packaging script on 2017-08-01
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "aegir_cloud"
+datestamp = "1501609452"
+
