@@ -60,10 +60,15 @@ function devshop_projects_form_project_node_form_alter(&$form, &$form_state, $fo
       'code_path',
     ),
   );
+
+  $items = [];
+  $items[] = t('Enter the relative path to the exposed document root within your repository. Leave blank if index.php is in the root. Common paths are docroot or web.');
+  $items[] = t('If you are using the drupal-composer project for Drupal 8, the default document root is "web".');
+
   $form['project']['codebase']['drupal_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Drupal'),
-    '#description' => t('Enter the relative path to the index.php file in your repository. Leave blank if index.php is in the root.'),
+    '#description' => theme('item_list', ['items' => $items]),
     '#size' => 40,
     '#default_value' => $project->drupal_path,
     '#maxlength' => 255,
@@ -522,8 +527,17 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
             '#value' => l($environment->servers['db']['name'], 'hosting/c/server_' . $environment->servers['db']['nid']),
             '#weight' => '-1',
           );
-
-          foreach ($form['parameters'] as $key => &$element) {
+        }
+        if (isset($_GET['rename'])) {
+          drupal_set_title(t('Change Domain Name for environment @env in project @proj?', array(
+            '@env' => $environment->name,
+            '@proj' => $environment->project_name,
+          )));
+          $form['help']['#value'] = t("Are you sure you want to change this environment's domain name?");
+          $form['submit']['#value'] = t('Change Domain');
+        }
+        if (isset($_GET['rename']) || $_GET['deploy'] == 'stack') {
+          foreach ($form['parameters'] as $key => $element) {
             if (is_int($key)) {
               // Don't unset the target platform. Just hide it.
               if (isset($element['target_platform']['#default_value'])) {
@@ -535,7 +549,6 @@ function devshop_projects_form_alter(&$form, &$form_state, $form_id) {
               }
             }
           }
-          $form['parameters']['#suffix'] = '</div>';
         }
         break;
 
@@ -1519,12 +1532,6 @@ function devshop_environment_deploy_hooks_form($project, $environment = NULL, $t
     '#description' => t('If features is enabled, revert all of them.'),
     '#default_value' => empty($environment->settings->deploy)? $project_revert : $environment_revert,
   );
-  $return['composer'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Run composer install.'),
-      '#description' => t('If a composer.json file is found, run <code>composer install</code>. <em>WARNING:</em> this may result in your git working tree to become modified.'),
-      '#default_value' => empty($environment->settings->deploy)? $project_composer_install : $environment_composer_install,
-  );
   // Look for .hooks or .hooks.yml
   if (!$is_environment_form || isset($project->settings->deploy, $project->settings->deploy['default_hooks']['dothooks'])) {
     $return['dothooks'] = array(
@@ -1615,7 +1622,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
   // Save environment record.
   // If environment already exists, set primary keys.
   $project = node_load($environment->project_nid);
-  if (isset($project->environments[$environment->name])) {
+  if (isset($project->project->environments[$environment->name])) {
     $primary_keys = array('project_nid', 'name');
   }
   else {
@@ -1629,7 +1636,7 @@ function devshop_projects_environment_settings_submit($form, &$form_state) {
 
     // Send our own message
     if (!empty($primary_keys)) {
-      drupal_set_message(t('Environment settings saved for %env in project %project.', array('%env' => $environment->name, '%project' => $project->project_name)));
+      drupal_set_message(t('Settings saved for environment !env.', array('!env' => l($environment->name, "node/{$environment->site}"))));
     }
     else {
       drupal_set_message(t('Environment !env created in project %project.', array(

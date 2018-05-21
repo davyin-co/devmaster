@@ -5,7 +5,7 @@ sudo: required
 # Only run test when committing to 1.x branch.
 branches:
   only:
-    - 1.x
+    - 7.x-1.x
 
 env:
   global:
@@ -61,7 +61,7 @@ before_install:
   - composer install
 
 script:
-  - ${COMMAND} -n
+  - ${COMMAND} -n --no-dev
 
 #  - container_id=$(mktemp)
 #    # Run container in detached state

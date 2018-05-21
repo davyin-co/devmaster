@@ -1,10 +1,5 @@
 <?php
 
-use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
-use SensioLabs\AnsiConverter\Theme\SolarizedTheme;
-use SensioLabs\AnsiConverter\Theme\SolarizedXTermTheme;
-use SensioLabs\AnsiConverter\Theme\Theme;
-
 /**
  * Implements hook_theme()
  */
@@ -57,7 +52,7 @@ function boots_preprocess_environment(&$vars) {
   }
 
   // Look for all available source environments
-  foreach ($vars['project']->environments as &$source_environment) {
+  foreach ($vars['project']->environments as $source_environment) {
     if ($source_environment->site) {
       $vars['source_environments'][$source_environment->name] = $source_environment;
     }
@@ -183,7 +178,7 @@ function boots_preprocess_environment(&$vars) {
 
   // Determine Environment State. Only one of these may be active at a time.
   // State: Site install failed.
-  if (current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
+  if (isset($environment->tasks) && is_array($environment->tasks['install']) && current($environment->tasks['install'])->task_status == HOSTING_TASK_ERROR) {
     $install_task = current($environment->tasks['install']);
     $buttons = l(
       '<i class="fa fa-refresh"></i> ' . t('Retry'),
@@ -919,7 +914,7 @@ data-target="#webhook-modal" title="Webhook URL">
                   <p>
                     $prefix
                   </p>
-                  <p><input class="form-control" value="$url" onclick="this.select()"></p>
+                  <p><input id="webhook-url" class="form-control" value="$url" onclick="this.select()"></p>
                   <p>
                     $suffix
                   </p>
@@ -948,7 +943,7 @@ HTML;
   $vars['target_environments'] = $project->environments;
 
   // Prepare environments output
-  foreach ($vars['node']->project->environments as &$environment) {
+  foreach ($vars['node']->project->environments as $environment) {
 
     // Render each environment.
     $vars['environments'][] = theme('environment', array(
