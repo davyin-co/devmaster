@@ -8,5 +8,5 @@ projects[drupal][version] = 7.58
 ; Leave in place for replacement by release process.
 projects[devmaster][type] = profile
 projects[devmaster][download][type] = git
-projects[devmaster][download][branch] = 1.x
+projects[devmaster][download][branch] = cloudrup
 projects[devmaster][download][url] = https://github.com/ipumpkin/devmaster.git
