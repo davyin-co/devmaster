@@ -41,14 +41,22 @@ function hosting_cron_queue($count) {
     }
     else {
       // Optionally add the cron_key querystring key if the site has one.
-      $url = _hosting_site_url($site) . '/cron.php';
+//       $url = _hosting_site_url($site) . '/cron.php';
+      $url = cloudrop_hosting_environment_url($site->environment) . '/cron.php';
+      if($site->environment->version > '7.z'){
+        $url = cloudrop_hosting_environment_url($site->environment) . '/cron';
+      }
       if (!empty($site->cron_key)) {
-        $url .= '?cron_key=' . rawurlencode($site->cron_key);
+        if($site->environment->version > '7.z'){
+          $url .= '/' . rawurlencode($site->cron_key);
+        }else{
+          $url .= '?cron_key=' . rawurlencode($site->cron_key);
+        }
       }
       drush_log(dt("running cron on URL %url", array('%url' => $url)));
       $response = drupal_http_request($url);
       if (isset($response->error) && $response->error) {
-        watchdog('hosting_cron', 'cron failed on site %site with error %error', array('%site' => $site->title, '%error' => $response->error), WATCHDOG_NOTICE);
+        watchdog('hosting_cron', 'cron failed on site %site with error %error', array('%site' => $url, '%error' => $response->error), WATCHDOG_NOTICE);
         continue; // don't update the timestamp
       }
     }
