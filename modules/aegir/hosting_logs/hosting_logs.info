@@ -1,0 +1,12 @@
+name = Hosting Logs
+description = Provides a site's error and watchdog logs to hostmaster front end.
+core = 7.x
+package = Hosting
+
+dependencies[] = hosting_site
+
+; Information added by Drupal.org packaging script on 2018-05-02
+version = "7.x-3.150"
+core = "7.x"
+project = "hosting_logs"
+datestamp = "1525261412"

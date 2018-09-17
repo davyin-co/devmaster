@@ -1,0 +1,11 @@
+name = Aegir Features
+description = Tools for managing the Drupal Features.module.
+package = Aegir
+core = 7.x
+dependencies[] = hosting_site
+; Information added by Drupal.org packaging script on 2017-09-25
+version = "7.x-1.00-beta1"
+core = "7.x"
+project = "aegir_config"
+datestamp = "1506353065"
+

@@ -1,0 +1,12 @@
+name = server_data
+description = Example implementation of saving data into a server context.
+package = Hosting Examples
+dependencies[] = hosting_server
+
+core = 7.x
+
+; Information added by Drupal.org packaging script on 2018-05-02
+version = "7.x-3.150"
+core = "7.x"
+project = "hosting"
+datestamp = "1525261102"
