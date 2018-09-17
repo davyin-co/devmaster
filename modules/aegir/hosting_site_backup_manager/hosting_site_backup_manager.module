@@ -473,12 +473,12 @@ function hosting_site_backup_manager_backups_table($site) {
 
     $row['actions'] = array(
       'data' => implode('', $actions),
-      'class' => 'hosting-actions',
+      'class' => ['hosting-actions'],
     );
 
     $rows[] = array(
       'data' => $row,
-      'class' => '',
+      'class' => [''],
     );
   }
 
