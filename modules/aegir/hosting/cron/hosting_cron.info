@@ -1,0 +1,11 @@
+name = Hosting Cron
+description = Allow the hosting system to cron all the installed sites on a schedule.
+package = Hosting
+dependencies[] = hosting_site
+core = 7.x
+
+; Information added by Drupal.org packaging script on 2018-05-02
+version = "7.x-3.150"
+core = "7.x"
+project = "hosting"
+datestamp = "1525261102"

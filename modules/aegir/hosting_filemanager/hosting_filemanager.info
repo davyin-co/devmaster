@@ -1,0 +1,12 @@
+name = Hosting Filemanager
+description = File manager for aegir sites.
+core = 7.x
+
+dependencies[] = hosting_site
+
+; Information added by Drupal.org packaging script on 2014-08-29
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "hosting_filemanager"
+datestamp = "1409282929"
+

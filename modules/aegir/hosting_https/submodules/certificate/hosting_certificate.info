@@ -1,0 +1,14 @@
+name = Aegir Certificate Service
+description = A service to generate HTTPS certificates for Aegir-hosted sites.
+package = Aegir HTTPS
+dependencies[] = hosting
+
+core = 7.x
+
+files[] = hosting_certificate.service.inc
+
+; Information added by Drupal.org packaging script on 2018-05-02
+version = "7.x-3.150"
+core = "7.x"
+project = "hosting_https"
+datestamp = "1525261472"

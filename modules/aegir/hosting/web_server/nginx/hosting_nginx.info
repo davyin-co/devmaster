@@ -1,0 +1,13 @@
+name = Nginx servers
+description = Allow hostmaster to configure NGINX web servers.
+package = Hosting
+dependencies[] = hosting_web_server
+core = 7.x
+
+files[] = hosting_nginx.service.inc
+
+; Information added by Drupal.org packaging script on 2018-05-02
+version = "7.x-3.150"
+core = "7.x"
+project = "hosting"
+datestamp = "1525261102"
