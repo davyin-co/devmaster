@@ -244,16 +244,21 @@ function devshop_task_get_messages($task_node) {
       ORDER BY lid", array(
     ':nid' => $task_node->nid,
     ':vid' => $task_node->vid,
-    ':devshop' => 'devshop_%',
+    ':devshop' => 'p_%',
     ':error' => 'error',
     ':warning' => 'warning',
 //    ':success' => 'success',
 //    ':ok' => 'ok',
   ));
+  $process_logs = FALSE;
 
   foreach ($result as $record) {
 
-    if ($record->type == 'devshop_command') {
+    if (strpos($record->type, 'p_') === 0) {
+      $process_logs = TRUE;
+    }
+
+    if ($record->type == 'p_command') {
       if (empty($record->message)) {
         continue;
       }
@@ -268,15 +273,15 @@ function devshop_task_get_messages($task_node) {
         $outputs[$command]['icon'] .= ' fa-spin';
       }
       continue;
-    } elseif ($record->type == 'devshop_info') {
+    } elseif ($record->type == 'p_info') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'default';
       $outputs[$command]['icon'] = 'gear fa-spin';
-    } elseif ($record->type == 'devshop_ok') {
+    } elseif ($record->type == 'p_ok') {
       $outputs[$command]['output'] .= $record->message;
       $outputs[$command]['status'] = 'success';
       $outputs[$command]['icon'] = 'check';
-    } elseif ($record->type == 'devshop_error') {
+    } elseif ($record->type == 'p_error') {
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
       $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
@@ -286,6 +291,13 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'exclamation-triangle';
       $outputs[$command]['output'] = isset($outputs[$command]['output']) ? $outputs[$command]['output'] .= $record->message : $record->message;
       $outputs[$command]['command'] = 'warning';
+
+    }
+
+    // If error is the one caused by "drush_set_error", don't bother displaying because the process one works well on it's own.
+    elseif ($process_logs && $record->type == 'error' && $record->message == 'PROVISION_PROCESS_ERROR') {
+      continue;
+
     } elseif ($record->type == 'error') {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
@@ -295,7 +307,7 @@ function devshop_task_get_messages($task_node) {
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
       $outputs[$command]['command'] = 'error';
-    } elseif ($record->type == 'devshop_log') {
+    } elseif ($record->type == 'p_log') {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
@@ -438,7 +450,8 @@ function template_preprocess_devshop_project_nav(&$vars) {
 
   // Add "refresh branches" link if project is manual deploy mode or is missing a webhook
   if ($project->settings->deploy['method'] == 'manual' || empty($project->settings->deploy['last_webhook'])) {
-    $vars['branches_items'][] = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+    $link_refresh = l(t('Refresh branches'), 'hosting_confirm/' . $node->nid . '/project_verify', array('attributes' => array('class' => array('refresh-link')), 'query' => array('token' => drupal_get_token($user->uid))));
+    array_unshift($vars['branches_items'], $link_refresh);
   }
 
   // Scrub git urls
