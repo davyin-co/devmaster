@@ -370,7 +370,7 @@ function hosting_site_language_callback($form, &$form_state) {
  */
 function hosting_site_validate($node, &$form) {
   global $user;
-  $valid_options = hosting_site_available_options($node);
+//   $valid_options = hosting_site_available_options($node);
 
   // Domain names are case-insensitive, set to lower case.
   $url = strtolower(trim($node->title));
@@ -410,19 +410,19 @@ function hosting_site_validate($node, &$form) {
     }
   }
 
-  if (!in_array($node->profile, $valid_options['profile']) && !isset($node->nid)) {
-    form_set_error('profile', t('Please choose a valid profile'));
-  }
+//   if (!in_array($node->profile, $valid_options['profile']) && !isset($node->nid)) {
+//     form_set_error('profile', t('Please choose a valid profile'));
+//   }
 
-  if (!in_array($node->platform, $valid_options['platform']) && !isset($node->nid)) {
-    form_set_error('platform', t('Please choose a valid platform'));
-  }
+//   if (!in_array($node->platform, $valid_options['platform']) && !isset($node->nid)) {
+//     form_set_error('platform', t('Please choose a valid platform'));
+//   }
 
-  // Check that we are selecting a valid language for this profile,
-  // but only when a new site is created.
-  if (!in_array($node->site_language, $valid_options['site_language']) && empty($node->nid)) {
-    form_set_error('site_language', t('Please fill in a valid language'));
-  }
+//   // Check that we are selecting a valid language for this profile,
+//   // but only when a new site is created.
+//   if (!in_array($node->site_language, $valid_options['site_language']) && empty($node->nid)) {
+//     form_set_error('site_language', t('Please fill in a valid language'));
+//   }
 
 }
 
