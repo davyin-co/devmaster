@@ -58,7 +58,7 @@ function hosting_backup_queue_queue($count) {
 
   foreach ($sites as $site_id) {
     if ($task = _hosting_backup_queue_get_backup_task($site_id)) {
-      drush_invoke_process('@self', "hosting-task", array($task->nid), array('strict' => FALSE), array('fork' => TRUE));
+//       drush_invoke_process('@self', "hosting-task", array($task->nid), array('strict' => FALSE), array('fork' => TRUE));
     }
   }
 }
