@@ -208,7 +208,12 @@ function hosting_task_sync_form($node) {
   drupal_add_js(drupal_get_path('module', 'hosting_sync') . '/hosting_sync.js');
 
   // Get a list of compatible sources for this site as the destination.
-  $sites = hosting_sync_get_compatible_sites($node, 'destination');
+  if (isset($_GET['source'])) {
+    $sites = [];
+  }else{
+    $sites = hosting_sync_get_compatible_sites($node, 'destination');
+  }
+  
 
   $form['source'] = array(
     '#type' => 'item',
