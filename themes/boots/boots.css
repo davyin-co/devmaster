@@ -455,6 +455,10 @@ input.form-control.webhook-url {
   white-space: nowrap;
 }
 
+.btn-deploy-code li.create-git-ref a {
+  float: none;
+}
+
 .alert-spacing {
   margin-top: 15px;
 }
@@ -912,12 +916,6 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
   word-wrap: normal;
 }
 
-.follow-checkbox {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index: 10;
-}
 
 .task-details {
   margin-top: 3em;
@@ -963,6 +961,10 @@ div.hosting-task-retry form, div.hosting-task-retry form input {
 .panel-ansii.panel-body {
     background: #262626;
     padding: 0;
+}
+
+.panel-type-error pre {
+  white-space: normal;
 }
 
 .panel-ansii.panel-body pre {
@@ -1145,4 +1147,52 @@ li.text.code {
 
 #block-menu-devshop-footer-links > h2.block-title {
     display: none;
+}
+
+.devshop-support-block h3 {
+  font-size: 1.0em;
+  color: gray;
+  text-transform: uppercase;
+  padding: 1em;
+  padding-top:3em;
+}
+
+
+.region-footer .devshop-support-block h3 {
+  padding-top:1em;
+}
+
+.region-footer .devshop-support-block h3,
+.region-footer .devshop-support-block ul.nav,
+.region-footer .devshop-support-block ul.nav  li
+{
+  display: inline-block;
+}
+
+.table-responsive {
+  overflow: visible;
+}
+
+.task-info {
+    width: 100%;
+
+    position: relative;
+}
+
+.task-info-fixed {
+    width: 73%;
+    top: 20px;
+    position: fixed;
+}
+
+.project-environment-links-fixed {
+    position: fixed;
+    top: 40px;
+    z-index: 1;
+}
+
+.follow-checkbox {
+    position: absolute;
+    right: 10px;
+    z-index: 10;
 }
