@@ -206,7 +206,7 @@ function devshop_projects_preprocess_node(&$vars) {
     if ($vars['node']->task_status == HOSTING_TASK_PROCESSING || $vars['node']->task_status == HOSTING_TASK_QUEUED ) {
       $vars['follow_checkbox'] = array(
         '#type' => 'markup',
-        '#markup' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow"> Follow Logs',
+        '#markup' => '<label class="follow-checkbox btn btn-default"><input type="checkbox" id="follow" checked="checked"> Follow Logs',
       );
 
       $vars['follow_checkbox'] = drupal_render($vars['follow_checkbox']);
@@ -224,6 +224,15 @@ function devshop_projects_preprocess_node(&$vars) {
         $vars['running_label'] = t('Queued');
       }
     }
+    $vars['run_again'] = l(t('Run Again'), "hosting_confirm/{$node->rid}/{$node->ref_type}_{$node->task_type}", array(
+      'query' => array(
+        'token' => drupal_get_token(),
+        'redirect' => 'task-page',
+      ),
+      'attributes' => array(
+        'class' => array('btn btn-default'),
+      )
+    ));
   }
 }
 
@@ -302,7 +311,7 @@ function devshop_task_get_messages($task_node) {
       $command = 'error_' . count($outputs);
       $outputs[$command]['status'] = 'danger';
       $outputs[$command]['icon'] = 'exclamation-circle';
-      $outputs[$command]['output'] .= $record->message;
+      $outputs[$command]['output'] = $record->message;
 
       // @TODO: Here, we can check for obscure aegir errors and write our own.
       // devshop_check_errors($outputs[$command]['output']);
@@ -311,7 +320,7 @@ function devshop_task_get_messages($task_node) {
       $command = 'notice_' . count($outputs);
       $outputs[$command]['status'] = '';
       $outputs[$command]['icon'] = '';
-      $outputs[$command]['command'] .= $record->message;
+      $outputs[$command]['command'] = $record->message;
       $outputs[$command]['output'] = '';
     }
     // Let's show some success messages. There are way too many for verify and install tasks.
@@ -322,6 +331,7 @@ function devshop_task_get_messages($task_node) {
       $outputs[$command]['icon'] = 'check';
       $outputs[$command]['command'] = 'drush';
     }
+    $outputs[$command]['type'] = $record->type;
   }
 
   foreach ($outputs as $command => $data) {
@@ -345,7 +355,7 @@ function devshop_task_get_messages($task_node) {
     $output = theme('devshop_ascii', array('output' => $data['output']));
 
     if (!empty($output)) {
-      $body = "<div class='panel-body panel-ansii'>$output</div>";
+      $body = "<div class='panel-body panel-type-{$data['type']} panel-ansii'>$output</div>";
     }
     else {
       $body = '';
