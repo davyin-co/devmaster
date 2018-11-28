@@ -39,6 +39,13 @@ function hosting_remote_import_sites_choose_platform_form($form, &$form_state, $
     ),
   );
 
+  $form['overwrite'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Overwrite existing site?'),
+    '#description' => t('Checking this option will delete the site with the same name (if it exists) before importing the new site.'),
+    '#default_value' => FALSE,
+  );
+
   $form['platform'] = array(
     '#type' => 'radios',
     '#title' => t('Platform'),
@@ -83,8 +90,8 @@ function hosting_remote_import_sites_choose_platform_form_title_validate($elemen
   }
 
   # TODO: maybe we should allow creation of sites that conflict with HOSTING_SITE_DISABLED (which would then need to be renamed before being re-enabled)
-  if (!hosting_domain_allowed($url)) {
-    form_error($element, t("The domain name you have specified is already in use."));
+  if (!hosting_domain_allowed($url) && !$form_state['values']['overwrite']) {
+    form_error($element, t("The domain name you have specified is already in use. Check the box for overwriting if that's what you'd like to do."));
   }
 }
 

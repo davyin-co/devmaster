@@ -120,14 +120,23 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
     $cmd = "AEGIR_DRUSH_ALIAS={$drush_alias} {$script_path}/script $le_options --config {$script_path}/{$config_file} --out {$config_path} {$domain_list}";
     drush_log("Running: " . $cmd, 'notice');
     $result = drush_shell_exec($cmd);
-    foreach (drush_shell_exec_output() as $line) {
-      drush_log($line);
-    }
     if ($result) {
+      foreach (drush_shell_exec_output() as $line) {
+        drush_log($line);
+      }
       drush_log(dt("Successfully generated Let's Encrypt certificates."), 'success');
     }
     else {
-      drush_log(dt("Failed to generate Let's Encrypt certificates."), 'warning');
+      foreach (drush_shell_exec_output() as $line) {
+        drush_log($line, 'warning');
+      }
+
+      if (drush_get_option('hosting_https_fail_task_if_certificate_failes', FALSE)) {
+        drush_set_error('HTTPS_CERT_GEN_FAIL', dt('Failed to generate Let\'s Encrypt certificates.'));
+      }
+      else {
+        drush_log(dt('Failed to generate Let\'s Encrypt certificates.'), 'warning');
+      }
     }
   }
 
@@ -191,10 +200,13 @@ class Provision_Service_Certificate_LetsEncrypt extends Provision_Service_Certif
 
       // Initialize hooks file.
       provision_file()->copy($source . '/dehydrated-hooks.sh', $this->server->letsencrypt_script_path . '/dehydrated-hooks.sh');
+      provision_file()->chmod($this->server->letsencrypt_script_path . '/dehydrated-hooks.sh', 0755);
 
       if (drush_copy_dir($source . '/dehydrated', $this->server->letsencrypt_script_path . '/dehydrated', FILE_EXISTS_OVERWRITE)) {
         drush_log("Copied Let's Encrypt dehydrated script code into place.", 'success');
       }
+      provision_file()->chmod($this->server->letsencrypt_script_path . '/dehydrated/dehydrated', 0755);
+
       // Symlink the dehydrated code into place.
       provision_file()->symlink($this->server->letsencrypt_script_path . '/dehydrated/dehydrated', $this->server->letsencrypt_script_path . '/script', dt("Create Let's Encrypt dehydrated symlink."), 0644);
 

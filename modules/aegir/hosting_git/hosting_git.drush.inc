@@ -28,23 +28,18 @@ function drush_hosting_git_pre_hosting_task($task) {
     }
   }
 
-  // Only work on selected task types.
-  if (!in_array($task->task_type, array('git-pull', 'git-checkout', 'git-tag'))) {
-    return;
-  }
-
   if (!empty($task->task_args)) {
     if ($task->task_args['reset_hard'] == TRUE) {
       // Pass the option provision_git expects.
       $task->options['reset'] = TRUE;
     }
-    if (!empty($task->task_args['checkout_git_ref'])) {
+    if (!empty($task->task_args['git_ref'])) {
       // Pass the option provision_git expects.
-      $task->options['git_ref'] = $task->task_args['checkout_git_ref'];
+      $task->args[] = $task->task_args['git_ref'];
     }
-    if (!empty($task->task_args['git_tag'])) {
+    if (!empty($task->task_args['branch'])) {
       // Pass the option provision_git expects.
-      $task->args[] = $task->task_args['git_tag'];
+      $task->options['branch'] = 1;
     }
     if ($task->task_args['push']) {
       // Pass the option provision_git expects.
@@ -53,6 +48,24 @@ function drush_hosting_git_pre_hosting_task($task) {
     if ($task->task_args['checkout']) {
       // Pass the option provision_git expects.
       $task->options['checkout'] = TRUE;
+    }
+    if ($task->task_args['commit']) {
+      $task->options['commit'] = $task->task_args['commit'];
+    }
+    if ($task->task_args['message']) {
+      $task->options['message'] = $task->task_args['message'];
+    }
+    if ($task->task_args['push']) {
+      $task->options['push'] = $task->task_args['push'];
+    }
+    if ($task->task_args['name']) {
+      $task->options['name'] = $task->task_args['name'];
+    }
+    if ($task->task_args['mail`']) {
+      $task->options['mail'] = $task->task_args['mail'];
+    }
+    if ($task->task_args['files']) {
+      $task->options['files'] = $task->task_args['files'];
     }
   }
 
@@ -114,5 +127,20 @@ function hosting_git_post_hosting_verify_task($task, $data) {
     if (isset($context['repo_path'])) {
       $node->git['repo_path'] = $context['repo_path'];
     }
+  }
+}
+
+/**
+ * Implements hook_post_hosting_TASK_TYPE_task().
+ *
+ * After checkout, run a full hostmaster verify task to ensure git metadata is saved.
+ */
+function hosting_git_post_hosting_git_checkout_task($task, $data) {
+  if ($task->ref->type == 'platform') {
+    hosting_add_task($task->rid, 'verify');
+  }
+  elseif ($task->ref->type == 'site') {
+    hosting_add_task($task->ref->platform, 'verify');
+    hosting_add_task($task->rid, 'verify');
   }
 }

@@ -50,35 +50,21 @@ function drush_provision_git_tag($git_tag = '') {
   }
 
   // Try to perform the git checkout.
-  drush_log("Running $command", 'ok');
-  if (drush_shell_cd_and_exec($path, $command)) {
-    // Log the fact that it worked.
-    drush_log(dt('Git tag created: %tag.', array('%tag' => $git_tag)), 'ok');
+  provision_process($command, $path, 'Creating tag...');
+  $result = drush_get_context('provision_process_result');
+
+  if ($result->isSuccessful()) {
 
     // If 'checkout' was specified, checkout the tag.
     if (drush_get_option('checkout', FALSE)) {
-      if (drush_shell_cd_and_exec($path, "git checkout $git_tag")) {
-        drush_log(dt('Checked out git tag: %output', array('%output' => implode("\n", drush_shell_exec_output()))), 'ok');
-      }
-      else {
-        drush_log(dt('Unable to check out git tag: %output', array('%output' => implode("\n", drush_shell_exec_output()))), 'warning');
-      }
+      provision_process("git checkout $git_tag", $path, 'Checking out tag...');
     }
 
     // If 'push' was specified, run git push.
     if (drush_get_option('push', FALSE)) {
-      if (drush_shell_cd_and_exec($path, "git push origin $git_tag")) {
-        drush_log(dt('Git tag pushed to remote: %output', array('%output' => implode("\n", drush_shell_exec_output()))), 'ok');
-      }
-      else {
-        drush_log(dt('Unable to push tag to remote: %output', array('%output' => implode("\n", drush_shell_exec_output()))), 'warning');
-      }
+      provision_process("git push origin $git_tag", $path, 'Pushing tag...');
     }
 
     _provision_git_update_git_meta_data();
-  }
-  else {
-    // The command failed.
-    return drush_set_error('DRUSH_PROVISION_GIT_CHECKOUT_FAILED', dt("Git tag failed! \nThe specific errors are below:\n!errors", array('!errors' => implode("\n", drush_shell_exec_output()))));
   }
 }

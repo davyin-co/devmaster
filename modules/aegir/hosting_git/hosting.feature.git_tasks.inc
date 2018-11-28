@@ -30,8 +30,8 @@ function hosting_git_hosting_feature() {
   );
 
   $features['git_pull'] = array(
-    'title' => t('Git pull task'),
-    'description' => t('Enables git pull tasks on sites and platforms.'),
+    'title' => t('Git Pull'),
+    'description' => t('Pull code to the server manually or automatically.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_git_pull',
     'group' => 'advanced',
@@ -49,8 +49,8 @@ function hosting_git_hosting_feature() {
   );
 
   $features['git_checkout'] = array(
-    'title' => t('Git checkout task'),
-    'description' => t('Enables git checkout tasks on sites and platforms.'),
+    'title' => t('Git Checkout'),
+    'description' => t('Change or create new branches.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_git_checkout',
     'group' => 'advanced',
@@ -68,8 +68,8 @@ function hosting_git_hosting_feature() {
   );
 
   $features['git_tag'] = array(
-    'title' => t('Git tag task'),
-    'description' => t('Create tags in site and platform git repositories'),
+    'title' => t('Git Tag'),
+    'description' => t('Create new git tags.'),
     'status' => HOSTING_FEATURE_DISABLED,
     'module' => 'hosting_git_tag',
     'group' => 'advanced',
@@ -82,6 +82,25 @@ function hosting_git_hosting_feature() {
       ),
       'aegir client' => array(
         'create site git-tag task',
+      ),
+    )
+  );
+
+  $features['git_commit'] = array(
+    'title' => t('Git Commit'),
+    'description' => t('Commit files to git repositories.'),
+    'status' => HOSTING_FEATURE_DISABLED,
+    'module' => 'hosting_git_commit',
+    'group' => 'advanced',
+    'role_permissions' => array(
+      'aegir platform manager' => array(
+        'create platform git-commit task',
+      ),
+      'aegir account manager' => array(
+        'create site git-commit task',
+      ),
+      'aegir client' => array(
+        'create site git-commit task',
       ),
     )
   );

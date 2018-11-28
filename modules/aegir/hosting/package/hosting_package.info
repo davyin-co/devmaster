@@ -11,8 +11,8 @@ files[] = includes/views/handlers/hosting_package_handler_filter_status.inc
 files[] = includes/views/handlers/hosting_package_handler_filter_type.inc
 files[] = includes/views/handlers/hosting_package_handler_sort_site_count.inc
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-10-18
+version = "7.x-3.161"
 core = "7.x"
 project = "hosting"
-datestamp = "1525261102"
+datestamp = "1539885340"

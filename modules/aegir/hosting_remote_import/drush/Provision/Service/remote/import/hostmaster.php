@@ -57,7 +57,7 @@ class Provision_Service_remote_import_hostmaster extends Provision_Service_remot
   function list_sites() {
     $sites = array();
 
-    $result = $this->remote_execute('@hostmaster variable-get aegir_api --format=string', array());
+    $result = $this->remote_execute('@hostmaster variable-get aegir_api --format=string', array(), FALSE);
     $aegir_api = trim($result['output']);
     $api_parts = explode(':', $aegir_api);
     if (sizeof($api_parts) >= 2) {
@@ -127,7 +127,7 @@ class Provision_Service_remote_import_hostmaster extends Provision_Service_remot
     return FALSE;
   }
 
-  function remote_execute($command, $data = array()) {
+  function remote_execute($command, $data = array(), $integrate = TRUE) {
     $data += array(
       'root' => NULL,
       'uri' => NULL,
@@ -143,7 +143,7 @@ class Provision_Service_remote_import_hostmaster extends Provision_Service_remot
 
     return drush_invoke_process($config, $command, $data, array(), array(
       'method' => 'POST',
-      'integrate' => TRUE,
+      'integrate' => $integrate,
     ));
   }
 
