@@ -16,8 +16,8 @@ regions[header] = Header
 regions[footer] = Footer
 regions[help] = Help
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-09-19
+version = "7.x-3.160"
 core = "7.x"
 project = "eldir"
-datestamp = "1525261132"
+datestamp = "1537352468"

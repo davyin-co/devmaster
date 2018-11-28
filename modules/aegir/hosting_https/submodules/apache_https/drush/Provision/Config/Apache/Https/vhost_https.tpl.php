@@ -31,6 +31,7 @@ if (!$aegir_root && $server->aegir_root) {
 
     # Enable SSL handling.
 
+    <?php if (file_exists($https_cert_key)): ?>
     SSLEngine on
 
     SSLCertificateFile <?php print $https_cert; ?>
@@ -39,6 +40,7 @@ if (!$aegir_root && $server->aegir_root) {
 
   <?php if (!empty($https_chain_cert)) : ?>
     SSLCertificateChainFile <?php print $https_chain_cert; ?>
+  <?php endif; ?>
   <?php endif; ?>
 
 <?php
@@ -60,6 +62,8 @@ if (sizeof($this->aliases)) {
 <?php
 if ($this->redirection) {
   print " # Redirect all aliases to the selected alias.\n";
+  print " # Except for /.well-known/acme-challenge/ to prevent potential problems with Let's Encrypt\n";
+  print " RewriteCond %{REQUEST_URI} '!/.well-known/acme-challenge/'\n";
   print " RewriteCond %{HTTP_HOST} !^{$this->redirection}$ [NC]\n";
   print " RewriteRule ^/*(.*)$ https://{$this->redirection}/$1 [NE,L,R=301]\n";
 }

@@ -5,8 +5,8 @@ dependencies[] = hosting
 core = 7.x
 
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-10-18
+version = "7.x-3.161"
 core = "7.x"
 project = "hosting"
-datestamp = "1525261102"
+datestamp = "1539885340"

@@ -32,7 +32,11 @@ function provision_git_drush_command() {
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'aliases' => array('commit'),
     'options' => array(
-      'message' => 'The message to attach to the commit.',
+      'message' => 'Optional: The commit message to use. Defaults to a generated message.',
+      'push' => 'Push the code after committing. Defaults to FALSE',
+      'files' => 'Optional: A list of files to commit.',
+      'name' => 'Optional: The name of the user to commit as.',
+      'mail' => 'Optional: The email of the user to commit as.',
       'repo_path' => 'Optional: force a repository path. Defaults to the site or platform dir.',
       'force_repo_path_as_toplevel' => 'Stop Git from looking in parent directories. Defaults to FALSE.',
     ),
@@ -206,24 +210,89 @@ function drush_provision_git_push() {
  * Implements the provision-git-commit command.
  */
 function drush_provision_git_commit() {
+
+  if (d()->type == 'site') {
+    $git_url = d()->platform->repo_url;
+    $git_path = d()->platform->repo_path;
+
+  } elseif (d()->type == 'platform') {
+    $git_url = d()->repo_url;
+    $git_path = d()->repo_path;
+  }
+
+  $files = json_decode(drush_get_option('files', '[]'));
+  $push = drush_get_option('push', FALSE);
+  $name = drush_get_option('name', FALSE);
+  $mail = drush_get_option('mail', FALSE);
+  $hostmaster_uri = d('hostmaster')->uri;
+
   $repo_path = drush_get_option('repo_path');
+
+  // If files option was detected
+  if ($files) {
+    $files_list = '';
+
+    foreach ($files as $file) {
+      $file = $git_path . '/' . $file;
+      if (file_exists($file)) {
+        $files_list .= ' ' . $file;
+      }
+    }
+
+    // If files lists is not empty, add "git add" command to queue.
+    if (!empty($files_list)) {
+      $cmd = "git add {$files_list}";
+    }
+  }
+  // If no files are specified, add everything,
+  else {
+    $cmd = 'git add -A';
+  }
+
+  if ($cmd) {
+    provision_process($cmd, $git_path, dt('Adding files'));
+  }
+
+  provision_process('git status', $git_path, dt('Git Status'));
+
   $target = d()->name;
 
   //Generate commit message
   $message = array();
-  $message[] = "Provision Git Commit: $target";
+  $message[] = "Provision Git Commit";
+  $length = strlen(end($message));
+
+  if ($hostmaster_uri) {
+    $message[] = "Commited from site $target using $hostmaster_uri";
+    $length = strlen(end($message));
+  }
   if (drush_get_option('message')) {
-    $message[] = str_repeat('=', strlen($message[0]));
+    $message[] = str_repeat('=', $length);
     $message[] = drush_get_option('message');
   }
-  $message = implode("\n", $message);
 
-  // Execute git commit
-  // @TODO: Decide if we should we always assume "-a" (commit all changes)?
-  $ec = drush_shell_cd_and_exec($repo_path, "git commit -am '$message'");
+  // Make commit using environment variables for NAME and EMAIL, if specified.
+  $env = array();
+  if (!empty($name) || !empty($mail)) {
+    $message[] = str_repeat('=', $length);
+    $message[] = "Committed by user $name <$mail>";
+  }
+  if (!empty($name)) {
+    $env['GIT_AUTHOR_NAME'] = $name;
+    $env['GIT_COMMITTER_NAME'] = $name;
+  }
+  if (!empty($mail)) {
+    $env['GIT_AUTHOR_MAIL'] = $mail;
+    $env['GIT_COMMITTER_MAIL'] = $mail;
+  }
 
-  // drush_sell_cd_and_exec() returns TRUE on a exist status of 0, and
-  // FALSE on a non-zero exit status. Unfortunately, git exits with
+  // Implode message array and prepare for command insertion.
+  $message = escapeshellarg(implode("\n", $message));
+
+  // Show git status before commit
+  provision_process('git status', $git_path, dt('Git Status'));
+
+  // Unfortunately, git exits with
   // a status of 1 if there are no files to commit. This causes
   // drush_shell_cd_and_exec() to return FALSE and we think the
   // commit failed. So we have to resort to some hackery. We scan
@@ -231,15 +300,16 @@ function drush_provision_git_commit() {
   // if the count is 1, then we have to assume there was nothing
   // to commit.
 
-  // Assume nothing committed
-  drush_set_context('PROVISION_GIT_COMMITTED', 0);
+  // Run commit process with environment variables.
+  $output = provision_process("git commit -m {$message}", $git_path, 'Committing changes', $env, TRUE, NULL, FALSE);
 
-  if (!$ec) {
+  $process = drush_get_context('provision_process_result');
+  if (!$process->isSuccessful()) {
     $comments = 0;
     $lines = 0;
-
-    foreach (drush_shell_exec_output() as $line) {
-      if ($line[0] == '#') {
+    $lines_array = explode("\n", $output);
+    foreach ($lines_array as $line) {
+      if (strpos($line, '#') === 0) {
         $comments++;
       }
       else {
@@ -247,17 +317,26 @@ function drush_provision_git_commit() {
       }
     }
     if ($comments > 0 && $lines == 1) {
-      drush_log(dt('Nothing to commit.'), 'ok');
-      drush_set_context('DRUSH_ERROR_CODE', DRUSH_SUCCESS);
+      drush_log(dt('Nothing to commit.'), 'warning');
     }
-    else {
-      return drush_set_error('DRUSH_PROVISION_GIT_COMMIT_FAILED', dt("Git commit failed in !path.\nThe specific errors are below:\n!errors", array('!path' => $repo_path, '!errors' => implode("\n", drush_shell_exec_output()))));
+    elseif (strpos($output, 'nothing to commit, working directory clean') === FALSE) {
+      return drush_set_error('DRUSH_PROVISION_GIT_COMMIT_FAILED', $output);
     }
   }
-  else {
-    drush_set_context('PROVISION_GIT_COMMITTED', 1);
-    drush_log(dt('Git repository committed.'), 'ok');
-    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
+
+  // Push the result, if desired.
+  if ($push) {
+
+    // Do a little pre-check to ensure we don't hang at http password.
+    $git_url = parse_url($git_url);
+    if (($git_url['scheme'] == 'http' || $git_url['scheme'] == 'https') && empty($git_url['pass'])) {
+      drush_log('http git url detected, with no password. Unable to push to this repository.', 'warning');
+      return;
+    }
+    else {
+      provision_process("git push", $git_path, 'Pushing code to remote repository...');
+      provision_process('git status', $git_path, dt('Git Status'));
+    }
   }
 }
 
@@ -319,16 +398,7 @@ function drush_provision_git_clone($git_url = '', $path = '', $git_ref = '') {
   }
 
   // Try to perform the git clone
-  drush_log("Running $command", 'ok');
-  if (drush_shell_exec($command)) {
-    // Log the fact that it worked
-    drush_log(dt('Clone successful.'), 'ok');
-    drush_log(implode("\n", drush_shell_exec_output()), 'ok');
-  }
-  else {
-    // The command failed
-    return drush_set_error('DRUSH_PROVISION_GIT_CLONE_FAILED', dt("Git clone failed! \nThe specific errors are below:\n!errors", array('!errors' => implode("\n", drush_shell_exec_output()))));
-  }
+  provision_process($command);
 }
 
 /**
@@ -455,7 +525,8 @@ function _provision_git_update_git_meta_data() {
       drush_set_option('repo_url', $repo_url);
     }
     if (drush_shell_cd_and_exec($repo_path, 'git describe --tags --exact-match || git symbolic-ref -q HEAD')) {
-      $git_ref = trim(str_replace('refs/heads/', '',drush_shell_exec_output()));;
+      $temp_git_ref = str_replace('refs/heads/', '',drush_shell_exec_output());
+      $git_ref = (!empty($temp_git_ref) && is_string($temp_git_ref)) ? trim($temp_git_ref) : $temp_git_ref;
       drush_set_option('git_ref', $git_ref);
     }
   }
@@ -500,4 +571,19 @@ function provision_git_drush_init() {
 function provision_git_provision_services() {
   provision_git_register_autoload();
   return array('git' => NULL);
+}
+
+/**
+ * Implements drush_hook_post_COMMAND().
+ *
+ * Integrates with Features Update command
+ */
+function drush_provision_git_post_provision_features_update_all() {
+
+  // provision-git-commit will handle the push.
+  if (drush_get_option('commit')) {
+    drush_provision_git_commit();
+  }
+
+  provision_process('git status', d()->platform->repo_path);
 }

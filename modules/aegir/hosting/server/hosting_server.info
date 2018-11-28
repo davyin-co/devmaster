@@ -11,8 +11,8 @@ files[] = includes/views/handlers/hosting_server_handler_field_services.inc
 files[] = includes/views/handlers/hosting_server_handler_field_human_name.inc
 files[] = includes/views/handlers/hosting_server_handler_field_status.inc
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-10-18
+version = "7.x-3.161"
 core = "7.x"
 project = "hosting"
-datestamp = "1525261102"
+datestamp = "1539885340"

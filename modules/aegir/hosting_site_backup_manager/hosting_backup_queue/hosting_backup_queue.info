@@ -5,8 +5,8 @@ package = Aegir Backup
 dependencies[] = hosting_site
 dependencies[] = hosting_site_backup_manager
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-09-19
+version = "7.x-3.160"
 core = "7.x"
 project = "hosting_site_backup_manager"
-datestamp = "1525261433"
+datestamp = "1537352422"

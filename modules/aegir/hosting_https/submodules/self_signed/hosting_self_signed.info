@@ -9,8 +9,8 @@ core = 7.x
 
 files[] = hosting_self_signed.service.inc
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-09-19
+version = "7.x-3.160"
 core = "7.x"
 project = "hosting_https"
-datestamp = "1525261472"
+datestamp = "1537352435"

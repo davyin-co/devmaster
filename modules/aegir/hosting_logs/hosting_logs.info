@@ -5,8 +5,8 @@ package = Hosting
 
 dependencies[] = hosting_site
 
-; Information added by Drupal.org packaging script on 2018-05-02
-version = "7.x-3.150"
+; Information added by Drupal.org packaging script on 2018-09-19
+version = "7.x-3.160"
 core = "7.x"
 project = "hosting_logs"
-datestamp = "1525261412"
+datestamp = "1537352409"

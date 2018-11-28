@@ -59,35 +59,33 @@ function hosting_git_tag_permission() {
  */
 function hosting_task_git_tag_form($node) {
 
-  drupal_set_title(t('Create a Git Tag'));
-
-  $form['git_tag'] = array(
+  $form['git_ref'] = array(
     '#title' => t('Tag'),
-    '#description' => t("The name to give the tag."),
+    '#description' => t("Enter the tag you wish to create.        "),
     '#type' => 'textfield',
-    '#weight' => 1,
     '#default_value' => isset($_GET['git_tag'])? $_GET['git_tag']: '',
+    '#attributes' => array(
+      'placeholder' => 'v1.0.0',
+    )
+  );
+
+  $form['reset_hard'] = array(
+    '#title' => t('Run <code>git reset --hard</code> before checkout?'),
+    '#description' => t("Revert all uncommitted changes before creating or changing the branch"),
+    '#type' => 'checkbox',
+    '#default_value' => TRUE,
   );
 
   $form['push'] = array(
     '#title' => t('Push Tag to remote'),
-    '#description' => t("Push the tag to the repository's remote."),
+    '#description' => t("Push the tag to the repository's remote.     "),
     '#type' => 'checkbox',
-    '#weight' => 2,
-    '#default_value' => TRUE,
-  );
-
-  $form['reset_hard'] = array(
-    '#title' => t('Force: Reset --hard before tag?'),
-    '#description' => t("Uncommitted changes will be lost."),
-    '#type' => 'checkbox',
-    '#weight' => 3,
     '#default_value' => TRUE,
   );
 
   $form['checkout'] = array(
     '#title' => t('Checkout Tag'),
-    '#description' => t("When done creating the tag, check it out so the repository stays on that tag."),
+    '#description' => t("When done creating the tag, check it out so the code stays at this tag."),
     '#type' => 'checkbox',
     '#weight' => 4,
     '#default_value' => TRUE,

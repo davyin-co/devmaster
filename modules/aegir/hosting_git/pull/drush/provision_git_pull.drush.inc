@@ -4,6 +4,7 @@
  * Implementation of hook_drush_command().
  */
 function provision_git_pull_drush_command() {
+  // @TODO: Move to provision_git_drush_command().
   $items['provision-git-pull'] = array(
     'description' => 'Executes "git pull".',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
