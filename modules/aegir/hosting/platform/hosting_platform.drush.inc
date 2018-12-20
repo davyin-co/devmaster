@@ -85,22 +85,22 @@ function hosting_platform_post_hosting_verify_task($task, $data) {
       // @todo : package instances of modules to profiles. <-- huh?
     }
 
-    foreach ($context['sites'] as $url) {
-      if (hosting_domain_allowed($url)) {
-        // Import any sites that have not been created yet.
-        $site = new stdClass();
-        $site->type = 'site';
-        $site->site_status = HOSTING_SITE_QUEUED;
-        $site->import = TRUE;
-        $site->title = $url;
-        $site->platform = $node->nid;
-        $site->client = HOSTING_DEFAULT_CLIENT;
-        $site->db_server = HOSTING_DEFAULT_DB_SERVER;
-        node_save($site);
-        drush_log(dt("Imported existing site !domain", array('!domain' => _hosting_node_link($site->nid))));
-        hosting_package_instance_sync($site->nid, $site->type, $packages['base']);
-      }
-    }
+//     foreach ($context['sites'] as $url) {
+//       if (hosting_domain_allowed($url)) {
+//         // Import any sites that have not been created yet.
+//         $site = new stdClass();
+//         $site->type = 'site';
+//         $site->site_status = HOSTING_SITE_QUEUED;
+//         $site->import = TRUE;
+//         $site->title = $url;
+//         $site->platform = $node->nid;
+//         $site->client = HOSTING_DEFAULT_CLIENT;
+//         $site->db_server = HOSTING_DEFAULT_DB_SERVER;
+//         node_save($site);
+//         drush_log(dt("Imported existing site !domain", array('!domain' => _hosting_node_link($site->nid))));
+//         hosting_package_instance_sync($site->nid, $site->type, $packages['base']);
+//       }
+//     }
   }
 
   // When a server is verified, queue up a verify task for every platform.
