@@ -779,9 +779,10 @@ function devshop_projects_form_site_node_form_alter(&$form, &$form_state, $form_
 
   // On site create page, use devshop_projects_create_environment_form()
   if (arg(1) == 'add') {
+    $project = devshop_projects_load_by_name(arg(3));
+    $form['#project_node'] = $project;
     devshop_projects_create_environment_form($form, $form_state, $form_id);
 
-    $project = devshop_projects_load_by_name(arg(3));
   }
 
   // Only act on site nodes that are in projects.
@@ -942,7 +943,11 @@ function devshop_hosting_alias_add_alias_callback($form, $form_state) {
 function devshop_projects_create_environment_form(&$form, &$form_state, $form_id) {
 
   // Look for project. If there is none, return.
-  $project_node = devshop_projects_load_by_name(arg(3));
+  if(isset($form['#project_node'])){
+    $project_node = $form['#project_node'];
+  }else{
+    $project_node = devshop_projects_load_by_name(arg(3));
+  }
   if ($project_node->type != 'project') {
     return;
   }

@@ -37,26 +37,26 @@ function devshop_projects_tasks_status_json() {
   }
 
   // Look up any remaining queued or processing tasks.
-  $query = db_select('node', 'n');
-  $query->join('hosting_task', 't', 'n.vid=t.vid');
-  $query
-    ->fields('n', array('nid'))
-    ->condition('type', 'task')
-    ->orderBy('n.vid', 'DESC')
-    ->addTag('node_access');
+//   $query = db_select('node', 'n');
+//   $query->join('hosting_task', 't', 'n.vid=t.vid');
+//   $query
+//     ->fields('n', array('nid'))
+//     ->condition('type', 'task')
+//     ->orderBy('n.vid', 'DESC')
+//     ->addTag('node_access');
 
-  $or = db_or();
-  $or->condition('task_status', HOSTING_TASK_PROCESSING);
-  $or->condition('task_status', HOSTING_TASK_QUEUED);
-  $query->condition($or);
+//   $or = db_or();
+//   $or->condition('task_status', HOSTING_TASK_PROCESSING);
+//   $or->condition('task_status', HOSTING_TASK_QUEUED);
+//   $query->condition($or);
 
-  if (!empty($nids)) {
-    $query->condition('n.nid', $nids, 'NOT IN');
-  }
-  $extras = $query->execute();
-  foreach ($extras as $row) {
-    $nids[] = $row->nid;
-  }
+//   if (!empty($nids)) {
+//     $query->condition('n.nid', $nids, 'NOT IN');
+//   }
+//   $extras = $query->execute();
+//   foreach ($extras as $row) {
+//     $nids[] = $row->nid;
+//   }
 
   foreach ($nids as $nid) {
     $task_node = node_load($nid);

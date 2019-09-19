@@ -74,7 +74,7 @@ function drush_devshop_provision_post_provision_devshop_deploy($git_ref = '') {
   $revert = drush_get_option('revert');
   $update = drush_get_option('update');
   $cache = drush_get_option('cache');
-  $composer = drush_get_option('composer', TRUE);
+  $composer = drush_get_option('composer', FALSE);
 
   $project_name = d()->project;
   $project = (object) d("@project_{$project_name}")->project;

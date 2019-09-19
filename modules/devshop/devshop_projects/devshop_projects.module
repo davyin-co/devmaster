@@ -74,10 +74,6 @@ function devshop_projects_init() {
       }
     }
   }
-  // If on the projects list page...
-  elseif(arg(0) != 'admin') {
-    drupal_add_js(drupal_get_path('module', 'devshop_projects') . '/inc/task-ajax.js');
-  }
 }
 
 /**
