@@ -54,7 +54,7 @@ function drush_hosting_dispatch() {
                       '@max' => $info['calc_items'])
                       )
                     );
-            drush_invoke_process('@self', "hosting-" . $queue, array(), array('items' => $count, 'strict' => FALSE), array('fork' => TRUE));
+            drush_invoke_process('@self', "hosting-" . $queue, array(), array('items' => $count, 'strict' => FALSE), array('fork' => FALSE));
           }
         }
         else {
