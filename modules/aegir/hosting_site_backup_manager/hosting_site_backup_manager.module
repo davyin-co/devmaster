@@ -529,7 +529,7 @@ function _hosting_site_backup_manager_isfileavailable($site, $bid) {
     $root = variable_get('aegir_backup_export_path', '/var/aegir/backup-exports');
     $file = $root . '/' . basename($source->filename);
 
-    if (file_exists($file)) {
+    if (is_link($file)) {
       return TRUE;
     }
   }
