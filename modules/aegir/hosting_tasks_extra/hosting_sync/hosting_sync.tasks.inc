@@ -209,7 +209,12 @@ function hosting_task_sync_form($node) {
 
   // Get a list of compatible sources for this site as the destination.
   if (isset($_GET['source'])) {
-    $sites = [];
+    $sites = [
+      [
+        'platform' => $node->platform,
+        'sites' => [node_load($_GET['source'])]
+      ],
+    ];
   }else{
     $sites = hosting_sync_get_compatible_sites($node, 'destination');
   }
